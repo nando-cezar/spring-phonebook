@@ -28,8 +28,9 @@ public class Contact {
     @JoinColumn(name = "contact_id")
     private List<Number> numbers;
 
-    public Contact(String name, String email) {
+    public Contact(String name, String email, List<Number> numbers) {
         this.name = name;
         this.email = email;
+        this.numbers = numbers;
     }
 }

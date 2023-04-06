@@ -9,13 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.edu.ifba.phonebook.dto.ContactDtoRequest;
-import br.edu.ifba.phonebook.dto.ContactDtoResponse;
+import br.edu.ifba.phonebook.domain.contracts.CrudSpecification;
+import br.edu.ifba.phonebook.domain.dto.request.ContactDtoRequest;
+import br.edu.ifba.phonebook.domain.dto.response.ContactDtoResponse;
 import br.edu.ifba.phonebook.service.ContactService;
 
 @RestController
 @RequestMapping(path = "/contacts")
-public class ContactController {
+public class ContactController implements CrudSpecification <ContactDtoResponse, ContactDtoRequest>{
     
     @Autowired
     private ContactService service;
@@ -25,8 +26,26 @@ public class ContactController {
         return service.save(contact);
     }
 
+    @Override
+    public ContactDtoResponse update(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    }
+
     @GetMapping
     public List<ContactDtoResponse> findAll(){
         return service.findAll();
+    }
+
+    @Override
+    public ContactDtoResponse findById(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    }
+
+    @Override
+    public ContactDtoResponse delete(Long id) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 }

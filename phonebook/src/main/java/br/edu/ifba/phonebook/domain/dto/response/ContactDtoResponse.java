@@ -1,4 +1,4 @@
-package br.edu.ifba.phonebook.dto;
+package br.edu.ifba.phonebook.domain.dto.response;
 
 import java.util.List;
 import java.util.stream.Collectors;
