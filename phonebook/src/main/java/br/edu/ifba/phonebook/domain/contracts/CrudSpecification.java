@@ -2,12 +2,14 @@ package br.edu.ifba.phonebook.domain.contracts;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
+
 public interface CrudSpecification <T, E> {
     
-    T save(E e);
-    T update(Long id);
+    ResponseEntity<T> save(E e);
+    ResponseEntity<T> update(Long id, E e);
     List<T> findAll();
-    T findById(Long id);
-    T delete(Long id);
+    ResponseEntity<T> findById(Long id);
+    ResponseEntity<T> delete(Long id);
     
 }

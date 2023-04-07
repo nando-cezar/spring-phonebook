@@ -1,8 +1,9 @@
 package br.edu.ifba.phonebook.service;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import br.edu.ifba.phonebook.domain.contracts.CrudSpecification;
@@ -17,15 +18,21 @@ public class ContactService implements CrudSpecification <ContactDtoResponse, Co
     private ContactRepository contactRepository;
 
     @Override
-    public ContactDtoResponse save(ContactDtoRequest contact){
+    public ResponseEntity<ContactDtoResponse> save(ContactDtoRequest contact){
         var data = contactRepository.save(contact.toEntity());
-        return ContactDtoResponse.toDto(data);
+        return new ResponseEntity<ContactDtoResponse>(ContactDtoResponse.toDto(data), HttpStatus.OK);
     }
     
     @Override
-    public ContactDtoResponse update(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    public ResponseEntity<ContactDtoResponse> update(Long id, ContactDtoRequest contact) {
+
+        return contactRepository.findById(id)
+        .map(record -> {
+            record.setName(contact.name());
+            record.setEmail(contact.email());
+            contactRepository.save(record);
+            return ResponseEntity.ok().body(ContactDtoResponse.toDto(record));
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     public List<ContactDtoResponse> findAll(){
@@ -34,15 +41,19 @@ public class ContactService implements CrudSpecification <ContactDtoResponse, Co
 
     
     @Override
-    public ContactDtoResponse findById(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
-    }
+    public ResponseEntity<ContactDtoResponse> findById(Long id){
+        return contactRepository.findById(id)
+                .map(record -> ResponseEntity.ok().body(ContactDtoResponse.toDto(record)))
+                .orElse(ResponseEntity.notFound().build());
+     }
     
     @Override
-    public ContactDtoResponse delete(Long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    public ResponseEntity<ContactDtoResponse> delete(Long id) {
+        return contactRepository.findById(id)
+           .map(record -> {
+            contactRepository.deleteById(id);
+               return ResponseEntity.ok().body(ContactDtoResponse.toDto(record));
+           }).orElse(ResponseEntity.notFound().build());
     }
 
 }
