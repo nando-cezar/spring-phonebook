@@ -49,8 +49,12 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.26</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+		    <groupId>com.konghq</groupId>
+		    <artifactId>unirest-java</artifactId>
+		    <version>3.14.1</version>
 		</dependency>
 	</dependencies>
 

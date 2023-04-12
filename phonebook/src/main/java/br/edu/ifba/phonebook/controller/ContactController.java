@@ -17,6 +17,7 @@ import br.edu.ifba.phonebook.domain.contracts.CrudSpecification;
 import br.edu.ifba.phonebook.domain.dto.request.ContactDtoRequest;
 import br.edu.ifba.phonebook.domain.dto.response.ContactDtoResponse;
 import br.edu.ifba.phonebook.service.ContactService;
+import kong.unirest.Unirest;
 
 @RestController
 @RequestMapping(path = "/contacts")
@@ -28,7 +29,19 @@ public class ContactController implements CrudSpecification <ContactDtoResponse,
     @Override
     @PostMapping
     public ResponseEntity<ContactDtoResponse> save(@RequestBody ContactDtoRequest contact){
-        return service.save(contact);
+        
+    	service.save(contact);
+    	
+    	contact.numbers().stream().forEach(n -> {
+    		String route = "https://api.smsdev.com.br/v1/send";
+    		String token = "YQN5MG53HJITX4MCVKHM0Q5LH9HEMS07CW43E8MC9TLFHX5IZMF1GYTGZ5J995BTGNXBD9O5E21HOB4GVWG2RUOC1ODNEX5PGIRU7TODOHJ4AXXV2ZB0ZZ5IBAZR6UVV";
+    		String number = n.telephone();
+    		String message = "SMS DEV - Test connection";
+    		String url = route + "?key=" + token + "&type=9&number=" + number + "&msg=" + message;
+            Unirest.get(url).asString();
+    	});
+    	
+    	return service.save(contact);
     }
 
     @Override
