@@ -1,6 +1,9 @@
 package br.edu.ifba.phonebook.controller;
 
+import java.io.IOException;
+import java.io.FileInputStream;
 import java.util.List;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,23 +28,44 @@ public class ContactController implements CrudSpecification <ContactDtoResponse,
     
     @Autowired
     private ContactService service;
+    
+    public Properties getProp() throws IOException {
+		Properties props = new Properties();
+		FileInputStream file = new FileInputStream("C:\\Users\\aluno.ssa\\eclipse-workspace\\spring-phonebook\\phonebook\\src\\main\\resources\\application.properties");
+		props.load(file);
+		return props;
+
+	}
 
     @Override
     @PostMapping
     public ResponseEntity<ContactDtoResponse> save(@RequestBody ContactDtoRequest contact){
         
-    	service.save(contact);
+    	ResponseEntity<ContactDtoResponse> contactDto = null;
+    	
+    	
+		contactDto = service.save(contact);
     	
     	contact.numbers().stream().forEach(n -> {
-    		String route = "https://api.smsdev.com.br/v1/send";
-    		String token = "YQN5MG53HJITX4MCVKHM0Q5LH9HEMS07CW43E8MC9TLFHX5IZMF1GYTGZ5J995BTGNXBD9O5E21HOB4GVWG2RUOC1ODNEX5PGIRU7TODOHJ4AXXV2ZB0ZZ5IBAZR6UVV";
-    		String number = n.telephone();
-    		String message = "SMS DEV - Test connection";
-    		String url = route + "?key=" + token + "&type=9&number=" + number + "&msg=" + message;
-            Unirest.get(url).asString();
+    		try {
+    			Properties prop = getProp();
+    			
+    			String route = prop.getProperty("devsms.route");
+            	String token = prop.getProperty("devsms.token");
+            	String type = prop.getProperty("devsms.type");
+            	String message = prop.getProperty("devsms.message");
+        		String number = n.telephone();
+        		
+        		String url = route + "?key=" + token + "&type=" + type + "&number=" + number + "&msg=" + message;
+        		Unirest.get(url).asString();
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
+    		
+            ;
     	});
     	
-    	return service.save(contact);
+    	return contactDto;
     }
 
     @Override
