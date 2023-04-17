@@ -1,9 +1,6 @@
 package br.edu.ifba.phonebook.controller;
 
-import java.io.IOException;
-import java.io.FileInputStream;
 import java.util.List;
-import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import br.edu.ifba.phonebook.domain.dto.request.ContactDtoRequest;
 import br.edu.ifba.phonebook.domain.dto.response.ContactDtoResponse;
 import br.edu.ifba.phonebook.service.ContactService;
-import kong.unirest.Unirest;
 
 @RestController
 @RequestMapping(path = "/contacts")
@@ -71,7 +67,8 @@ public class ContactController {
         }).orElse(ResponseEntity.notFound().build());
     }
 
-    public Properties getProp() throws IOException {
+    /* Teste para envio de SMS */
+    /*public Properties getProp() throws IOException {
 		Properties props = new Properties();
 		FileInputStream file = new FileInputStream("C:\\Users\\aluno.ssa\\eclipse-workspace\\spring-phonebook\\phonebook\\src\\main\\resources\\application.properties");
 		props.load(file);
@@ -79,22 +76,22 @@ public class ContactController {
 
 	}
 
-    /*contact.numbers().stream().forEach(n -> {
-    		try {
-    			Properties prop = getProp();
-    			
-    			String route = prop.getProperty("devsms.route");
-            	String token = prop.getProperty("devsms.token");
-            	String type = prop.getProperty("devsms.type");
-            	String message = prop.getProperty("devsms.message");
-        		String number = n.telephone();
-        		
-        		String url = route + "?key=" + token + "&type=" + type + "&number=" + number + "&msg=" + message;
-        		Unirest.get(url).asString();
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		}
-    		
-            ;
-    	});*/
+    contact.numbers().stream().forEach(n -> {
+        try {
+            Properties prop = getProp();
+            
+            String route = prop.getProperty("devsms.route");
+            String token = prop.getProperty("devsms.token");
+            String type = prop.getProperty("devsms.type");
+            String message = prop.getProperty("devsms.message");
+            String number = n.telephone();
+            
+            String url = route + "?key=" + token + "&type=" + type + "&number=" + number + "&msg=" + message;
+            Unirest.get(url).asString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        ;
+    });*/
 }
