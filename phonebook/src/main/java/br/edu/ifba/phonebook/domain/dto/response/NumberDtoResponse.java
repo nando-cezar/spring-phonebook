@@ -12,6 +12,14 @@ public record NumberDtoResponse(Long id, String telephone, Category category) {
         this(number.getId(), number.getTelephone(), number.getCategory());
     }
 
+    public Number toEntity() {
+        return new Number(id, telephone, category);
+    }
+
+    public static NumberDtoResponse toDto(Number number) {
+        return new NumberDtoResponse(number);
+    }
+
     public static List<NumberDtoResponse> toListDto(List<Number> list){
         return list.stream().map(NumberDtoResponse::new).collect(Collectors.toList());
     }

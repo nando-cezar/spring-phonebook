@@ -16,6 +16,14 @@ public record ContactDtoResponse(Long id, String name, String email, List<Number
         );
     }
 
+    public Contact toEntity(){
+        return new Contact(id,
+            name, 
+            email,
+            numbers.stream().map(e -> e.toEntity()).collect(Collectors.toList())
+        );
+    }    
+
     public static ContactDtoResponse toDto(Contact contact) {
         return new ContactDtoResponse(contact);
     }
