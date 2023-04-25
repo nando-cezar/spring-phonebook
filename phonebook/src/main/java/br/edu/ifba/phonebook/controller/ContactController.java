@@ -62,7 +62,7 @@ public class ContactController {
     )
     public ResponseEntity<ContactDtoResponse> save(@Parameter(description = "New contact body content to be created") @RequestBody ContactDtoRequest data){
 		var dataDto = service.save(data);
-    	return new ResponseEntity<ContactDtoResponse>(dataDto, HttpStatus.CREATED);
+    	return new ResponseEntity<>(dataDto, HttpStatus.CREATED);
     }
 
     @GetMapping
@@ -194,9 +194,8 @@ public class ContactController {
     public ResponseEntity<ContactDtoResponse> deleteById(@Parameter(description = "Contact Id to be deleted") @PathVariable Long id) {
         return service.findById(id)
         .map(record -> {
-            var data = record;
             service.deleteById(id);
-            return ResponseEntity.ok().body(data);
+            return ResponseEntity.ok().body(record);
         }).orElse(ResponseEntity.notFound().build());
     }
 
