@@ -21,7 +21,7 @@ public record NumberDtoResponse(Long id, String telephone, Category category) {
     }
 
     public static List<NumberDtoResponse> toListDto(List<Number> list){
-        return list.stream().map(NumberDtoResponse::new).collect(Collectors.toList());
+        return list.stream().map(NumberDtoResponse::new).toList();
     }
 
 }

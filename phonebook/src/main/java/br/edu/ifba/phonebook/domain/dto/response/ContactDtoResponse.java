@@ -20,7 +20,7 @@ public record ContactDtoResponse(Long id, String name, String email, List<Number
         return new Contact(id,
             name, 
             email,
-            numbers.stream().map(e -> e.toEntity()).collect(Collectors.toList())
+            numbers.stream().map(NumberDtoResponse::toEntity).toList()
         );
     }    
 
@@ -29,14 +29,7 @@ public record ContactDtoResponse(Long id, String name, String email, List<Number
     }
 
     public static List<ContactDtoResponse> toListDto(List<Contact> list){
-        return list.stream()
-        .map(e -> new ContactDtoResponse(
-            e.getId(), 
-            e.getName(), 
-            e.getEmail(),
-            NumberDtoResponse.toListDto(e.getNumbers())
-            )
-        ).collect(Collectors.toList());
+        return list.stream().map(ContactDtoResponse::new).toList();
     }
 
 }

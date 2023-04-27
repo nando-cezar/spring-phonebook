@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data 
+@Data
 @Entity(name="contacts")
 public class Contact {
 
@@ -29,8 +29,7 @@ public class Contact {
     private List<Number> numbers;
 
     public Contact(String name, String email, List<Number> numbers) {
-        this.name = name;
-        this.email = email;
-        this.numbers = numbers;
+        this(null, name, email, numbers);
     }
+
 }

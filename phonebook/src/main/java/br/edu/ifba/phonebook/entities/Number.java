@@ -25,7 +25,6 @@ public class Number {
     private Category category;
 
     public Number(String telephone, Category category) {
-        this.telephone = telephone;
-        this.category = category;
+        this(null, telephone, category);
     }
 }

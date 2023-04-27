@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.edu.ifba.phonebook.domain.dto.request.ContactDtoRequest;
@@ -27,14 +28,14 @@ public class ContactService{
         return this.persist(data.toEntity());
     }
 
-    public Optional<List<ContactDtoResponse>> find(String name){
+    public Optional<List<ContactDtoResponse>> find(String name, Pageable pageable){
         
         if(name == null){
-            var data = ContactDtoResponse.toListDto(contactRepository.findAll());
+            var data = ContactDtoResponse.toListDto(contactRepository.findAll(pageable).toList());
             return Optional.of(data);
         }
 
-        var data = ContactDtoResponse.toListDto(contactRepository.findByNameContains(name));
+        var data = ContactDtoResponse.toListDto(contactRepository.findByNameContains(name, pageable));
         return Optional.of(data);
     }
 
@@ -56,8 +57,7 @@ public class ContactService{
 
         var listNumbers = data.getNumbers()
             .stream()
-            .distinct()
-            .collect(Collectors.toList());
+            .distinct().toList();
 
         var isCreate = data.getId() == null;
 
@@ -67,7 +67,7 @@ public class ContactService{
             var searchedNumber = numberRepository.findByTelephone(record.getTelephone());
             var isEmpty = searchedNumber.isEmpty();
             if(isEmpty) data.getNumbers().add(record);
-            else if(!isEmpty && !isCreate) data.getNumbers().add(searchedNumber.get());
+            else if(!isCreate) data.getNumbers().add(searchedNumber.get());
         }
 
         return ContactDtoResponse.toDto(contactRepository.save(data));

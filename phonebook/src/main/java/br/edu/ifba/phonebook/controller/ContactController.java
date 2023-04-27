@@ -3,6 +3,9 @@ package br.edu.ifba.phonebook.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping(path = "/contacts")
@@ -60,9 +64,14 @@ public class ContactController {
             )
         }
     )
-    public ResponseEntity<ContactDtoResponse> save(@Parameter(description = "New contact body content to be created") @RequestBody ContactDtoRequest data){
+    public ResponseEntity<ContactDtoResponse> save(
+            @Parameter(description = "New contact body content to be created")
+            @RequestBody ContactDtoRequest data,
+            UriComponentsBuilder builder
+    ){
 		var dataDto = service.save(data);
-    	return new ResponseEntity<>(dataDto, HttpStatus.CREATED);
+        var uri = builder.path("/contacts/{id}").buildAndExpand(dataDto.id()).toUri();
+    	return  ResponseEntity.created(uri).body(dataDto);
     }
 
     @GetMapping
@@ -91,8 +100,18 @@ public class ContactController {
             )
         }
     )
-    public ResponseEntity<List<ContactDtoResponse>> find(@Parameter(description = "Name for contact to be found (optional)") @RequestParam(required = false) String name){
-        var data = service.find(name).get();
+    public ResponseEntity<List<ContactDtoResponse>> find(
+            @Parameter(description = "Name for contact to be found (optional)")
+            @RequestParam(required = false)
+            String name,
+            @RequestParam(required = true, defaultValue = "0")
+            int page,
+            @RequestParam(required = true, defaultValue = "10")
+            int size
+    ){
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "name"));
+        var data = service.find(name, pageable).get();
         var isExists = data.isEmpty();
         return isExists ? 
             ResponseEntity.notFound().build() : 
@@ -125,7 +144,10 @@ public class ContactController {
             )
         }
     )
-    public ResponseEntity<ContactDtoResponse> findById(@Parameter(description = "Contact Id to be searched") @PathVariable Long id) {
+    public ResponseEntity<ContactDtoResponse> findById(
+            @Parameter(description = "Contact Id to be searched")
+            @PathVariable Long id
+    ) {
         return service.findById(id)
             .map(record -> ResponseEntity.ok().body(record))
             .orElse(ResponseEntity.notFound().build());
@@ -157,7 +179,12 @@ public class ContactController {
             )
         }
     )
-    public ResponseEntity<ContactDtoResponse> update(@Parameter(description = "Contact Id to be updated") @PathVariable Long id, @Parameter(description = "Contact Elements/Body Content to be updated") @RequestBody ContactDtoRequest data) {
+    public ResponseEntity<ContactDtoResponse> update(
+            @Parameter(description = "Contact Id to be updated")
+            @PathVariable Long id,
+            @Parameter(description = "Contact Elements/Body Content to be updated")
+            @RequestBody ContactDtoRequest data
+    ) {
         return service.findById(id)
         .map(record -> {
             var dataSaved = service.update(id, data);
@@ -191,7 +218,10 @@ public class ContactController {
             )
         }
     )
-    public ResponseEntity<ContactDtoResponse> deleteById(@Parameter(description = "Contact Id to be deleted") @PathVariable Long id) {
+    public ResponseEntity<ContactDtoResponse> deleteById(
+            @Parameter(description = "Contact Id to be deleted")
+            @PathVariable Long id
+    ) {
         return service.findById(id)
         .map(record -> {
             service.deleteById(id);

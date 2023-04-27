@@ -11,7 +11,7 @@ public record ContactDtoRequest(String name, String email, List<NumberDtoRequest
         return new Contact(
             name, 
             email,
-            numbers.stream().map(e -> e.toEntity()).collect(Collectors.toList())
+            numbers.stream().map(NumberDtoRequest::toEntity).toList()
         );
     }
 
