@@ -2,6 +2,7 @@ package br.edu.ifba.phonebook.controller;
 
 import java.util.List;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -154,6 +155,7 @@ public class ContactController {
     }
 
     @PutMapping(path = "/{id}")
+    @Transactional
     @Operation(summary = "Update only one contact")
     @ApiResponses(
         value = {
@@ -193,6 +195,7 @@ public class ContactController {
     }
 
     @DeleteMapping(path = "/{id}")
+    @Transactional
     @Operation(summary = "Delete only one contact")
     @ApiResponses(
         value = {
