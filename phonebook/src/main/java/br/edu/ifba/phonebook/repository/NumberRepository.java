@@ -5,7 +5,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.edu.ifba.phonebook.entities.Number;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface NumberRepository extends JpaRepository<Number, Long> {
-    public Optional<Number> findByTelephone(String telephone);
+    Optional<Number> findByTelephone(String telephone);
 }

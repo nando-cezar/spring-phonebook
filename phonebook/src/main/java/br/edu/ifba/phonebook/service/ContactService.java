@@ -1,9 +1,9 @@
 package br.edu.ifba.phonebook.service;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+import br.edu.ifba.phonebook.domain.exception.model.ContactNotFoundException;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,31 +24,58 @@ public class ContactService{
     @Autowired
     private NumberRepository numberRepository;
 
+    /**
+     * @param data The body content to be created
+     * @return a {@code ResponseEntity} instance
+     */
     public ContactDtoResponse save(ContactDtoRequest data){
-        return this.persist(data.toEntity());
+        var entity = data.toEntity();
+        return this.persist(entity);
     }
 
-    public Optional<List<ContactDtoResponse>> find(String name, Pageable pageable){
+    /**
+     * @param name The param to filter (optional)
+     * @param pageable The param to pagination
+     * @return a {@code ResponseEntity} instance
+     */
+    @SneakyThrows
+    public List<ContactDtoResponse> find(String name, Pageable pageable){
         
         if(name == null){
-            var data = ContactDtoResponse.toListDto(contactRepository.findAll(pageable).toList());
-            return Optional.of(data);
+            var data = contactRepository.findAll(pageable).toList();
+            if(data.isEmpty()) throw new ContactNotFoundException();
+            return ContactDtoResponse.toListDto(data);
         }
 
-        var data = ContactDtoResponse.toListDto(contactRepository.findByNameContains(name, pageable));
-        return Optional.of(data);
+        var data = contactRepository.findByNameContains(name, pageable);
+        if(data.isEmpty()) throw new ContactNotFoundException();
+        return ContactDtoResponse.toListDto(data);
     }
 
-    public Optional<ContactDtoResponse> findById(Long id){
-        return contactRepository.findById(id).map(ContactDtoResponse::new);
+    /**
+     * @param id The id to be searched
+     * @return a {@code ResponseEntity} instance
+     */
+    @SneakyThrows
+    public ContactDtoResponse findById(Long id){
+        var data = contactRepository.findById(id).orElseThrow(ContactNotFoundException::new);
+        return new ContactDtoResponse(data);
     }
 
-    public ContactDtoResponse update(Long id, ContactDtoRequest entity) {
-        var data = entity.toEntity();
-        data.setId(id);
-        return this.persist(data);
+    /**
+     * @param id The id to be updated
+     * @param data The elements/Body Content to be updated
+     * @return a {@code ResponseEntity} instance
+     */
+    public ContactDtoResponse update(Long id, ContactDtoRequest data) {
+        var entity = data.toEntity();
+        entity.setId(id);
+        return this.persist(entity);
     }
 
+    /**
+     * @param id The id to be deleted
+     */
     public void deleteById(Long id) {
         contactRepository.deleteById(id);
     }
